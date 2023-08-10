@@ -1,0 +1,40 @@
+{
+	"name": "flexsyscz/file-system",
+	"description": "Using this library helps you to manage your assets, uploads and other resources.",
+	"keywords": ["flexsyscz", "files", "http", "upload", "streams"],
+	"homepage": "https://www.flexsys.cz",
+	"license": ["BSD-3-Clause", "GPL-2.0-only", "GPL-3.0-only"],
+	"authors": [
+		{
+			"name": "Václav Lukeš",
+			"homepage": "https://www.vaclavlukes.cz"
+		}
+	],
+	"require": {
+		"php": ">=8.1",
+		"nette/http": "^3.0"
+	},
+	"require-dev": {
+		"nette/tester": "^2.5",
+		"phpstan/phpstan-nette": "^1.2",
+		"nette/coding-standard": "^3.3"
+	},
+	"autoload": {
+		"classmap": ["src/"]
+	},
+	"minimum-stability": "stable",
+	"scripts": {
+		"phpstan": "phpstan analyse",
+		"tester": "tester tests -s"
+	},
+	"extra": {
+		"branch-alias": {
+			"dev-master": "1.0-dev"
+		}
+	},
+	"config": {
+		"allow-plugins": {
+			"dealerdirect/phpcodesniffer-composer-installer": true
+		}
+	}
+}
