@@ -9,6 +9,7 @@ use Flexsyscz\FileSystem\Files\FileObject;
 use Flexsyscz\FileSystem\InvalidArgumentException;
 use Nette\Http\FileUpload;
 use Nette\Utils\Image;
+use Nette\Utils\ImageColor;
 use Nette\Utils\ImageException;
 use Nette\Utils\Random;
 
@@ -63,15 +64,16 @@ final class Container implements FileDescriptor
 				$exif = @exif_read_data($this->fileUpload->getTemporaryFile());
 				$image = $this->fileUpload->toImage();
 				if (is_array($exif) && !empty($exif['Orientation'])) {
+					$backgroundColor = ImageColor::hex('#000');
 					switch ($exif['Orientation']) {
 						case 8:
-							$image = $image->rotate(90, 0);
+							$image = $image->rotate(90, $backgroundColor);
 							break;
 						case 3:
-							$image = $image->rotate(180, 0);
+							$image = $image->rotate(180, $backgroundColor);
 							break;
 						case 6:
-							$image = $image->rotate(-90, 0);
+							$image = $image->rotate(-90, $backgroundColor);
 							break;
 					}
 				}
