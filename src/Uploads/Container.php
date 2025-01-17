@@ -4,27 +4,20 @@ declare(strict_types=1);
 
 namespace Flexsyscz\FileSystem\Uploads;
 
-use Flexsyscz\FileSystem\Files\FileDescriptor;
 use Flexsyscz\FileSystem\Files\FileObject;
-use Flexsyscz\FileSystem\InvalidArgumentException;
+use Flexsyscz\FileSystem\Files\ImageFile;
+use Flexsyscz\FileSystem\Exceptions\InvalidArgumentException;
 use Nette\Http\FileUpload;
-use Nette\Utils\Image;
-use Nette\Utils\ImageColor;
-use Nette\Utils\ImageException;
 use Nette\Utils\Random;
 
 
-final class Container implements FileDescriptor
+final class Container implements ImageFile
 {
 	use FileObject;
 
-	private FileUpload $fileUpload;
 
-
-	public function __construct(FileUpload $fileUpload)
+	public function __construct(private readonly FileUpload $fileUpload)
 	{
-		$this->fileUpload = $fileUpload;
-
 		$this->name = $fileUpload->getSanitizedName();
 		$this->size = $fileUpload->getSize();
 		$this->type = $fileUpload->getContentType();
@@ -44,68 +37,23 @@ final class Container implements FileDescriptor
 	}
 
 
-	public function getFileUpload(): FileUpload
-	{
-		return $this->fileUpload;
-	}
-
-
-	/**
-	 * @param int|string|null $width
-	 * @param int|string|null $height
-	 * @param int-mask-of<Image::OrSmaller|Image::OrBigger|Image::Stretch|Image::Cover|Image::ShrinkOnly> $flags
-	 * @return Image|null
-	 * @throws ImageException
-	 */
-	public function getOptimizedImage(int|string $width = null, int|string $height = null, int $flags = Image::OrSmaller): ?Image
-	{
-		if ($this->isOk()) {
-			if ($this->isImage()) {
-				$exif = @exif_read_data($this->fileUpload->getTemporaryFile());
-				$image = $this->fileUpload->toImage();
-				if (is_array($exif) && !empty($exif['Orientation'])) {
-					$backgroundColor = ImageColor::hex('#000');
-					switch ($exif['Orientation']) {
-						case 8:
-							$image = $image->rotate(90, $backgroundColor);
-							break;
-						case 3:
-							$image = $image->rotate(180, $backgroundColor);
-							break;
-						case 6:
-							$image = $image->rotate(-90, $backgroundColor);
-							break;
-					}
-				}
-
-				if ($width || $height) {
-					$image->resize($width, $height, $flags);
-				}
-
-				return $image;
-			}
-		}
-
-		return null;
-	}
-
-
 	/**
 	 * @param int $length
-	 * @param string $charlist
-	 * @param string $mask
+	 * @param string $charsetMask
+	 * @param callable|null $mapper
 	 * @return string
 	 */
-	public function getRandomizedName(int $length = 10, string $charlist = '0-9a-z', string $mask = '%s_%s'): string
+	public function getRandomizedName(int $length = 10, string $charsetMask = '0-9a-z', callable $mapper = null): string
 	{
 		if($length < 1) {
 			throw new InvalidArgumentException('Length must be equal or greater than 1.');
 		}
 
-		if (empty($charlist)) {
-			throw new InvalidArgumentException('Charlist must be defined.');
+		if (empty($charsetMask)) {
+			throw new InvalidArgumentException('Mask of charset must be defined.');
 		}
 
-		return sprintf($mask, Random::generate($length, $charlist), $this->name);
+		$prefix = Random::generate($length, $charsetMask);
+		return $mapper ? call_user_func($mapper, $prefix, $this->name) : sprintf('%s_%s', $prefix, $this->name);
 	}
 }

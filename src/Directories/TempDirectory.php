@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Flexsyscz\FileSystem\Directories;
 
 
-class TempDirectory
+final class TempDirectory extends Directory
 {
-	use Directory;
 }

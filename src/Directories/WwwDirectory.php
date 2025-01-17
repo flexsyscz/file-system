@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Flexsyscz\FileSystem\Directories;
 
 
-class WwwDirectory
+final class WwwDirectory extends Directory
 {
-	use Directory;
 }

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Flexsyscz\FileSystem\Streams\Csv;
 
-use Flexsyscz\FileSystem\InvalidStateException;
+use Flexsyscz\FileSystem\Exceptions\StreamWriterException;
 use Flexsyscz\FileSystem\Streams\StreamWriter;
 
 
@@ -20,12 +20,12 @@ class CsvStreamWriter implements StreamWriter
 	{
 		$file = fopen($filePath, 'w');
 		if (!$file) {
-			throw new InvalidStateException(sprintf('Unable to open a stream to the file %s', $filePath));
+			throw new StreamWriterException(sprintf('Unable to open a stream to the file %s', $filePath));
 		}
 
 		$this->file = $file;
 		if (!flock($this->file, LOCK_EX)) {
-			throw new InvalidStateException(sprintf('Unable to set a lock on the file %s', $filePath));
+			throw new StreamWriterException(sprintf('Unable to set a lock on the file %s', $filePath));
 		}
 
 		return $this;
@@ -46,7 +46,7 @@ class CsvStreamWriter implements StreamWriter
 		string $escapeChar = '\\'
 	): StreamWriter {
 		if (!is_array($data) || fputcsv($this->file, $data, $delimiter, $enclosure, $escapeChar) === false) {
-			throw new InvalidStateException('Unable to write the data into the CSV stream.');
+			throw new StreamWriterException('Unable to write the data into the CSV stream.');
 		}
 
 		return $this;
@@ -56,7 +56,7 @@ class CsvStreamWriter implements StreamWriter
 	public function close(): StreamWriter
 	{
 		if (!flock($this->file, LOCK_UN)) {
-			throw new InvalidStateException('Unable to release the file\'s lock.');
+			throw new StreamWriterException('Unable to release the file\'s lock.');
 		}
 
 		return $this;

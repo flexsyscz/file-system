@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Flexsyscz\FileSystem\Files;
 
 
-interface FileDescriptor
+interface ImageFile
 {
 	function isImage(): bool;
 }

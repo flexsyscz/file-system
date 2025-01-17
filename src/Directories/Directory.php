@@ -7,71 +7,79 @@ namespace Flexsyscz\FileSystem\Directories;
 use Nette\Utils\FileSystem;
 
 
-trait Directory
+abstract class Directory
 {
-	protected static string $dirPath;
+	protected string $dirPath;
+	private DocumentRoot $documentRoot;
 
 
-	public static function setUp(string $dirPath, bool $autoCreateDir = true): void
+	public function __construct(string $dirPath, DocumentRoot $documentRoot, bool $autoCreateDir = true)
 	{
-		self::$dirPath = FileSystem::normalizePath($dirPath);
+		$this->dirPath = FileSystem::normalizePath($dirPath);
+		$this->documentRoot = $documentRoot;
 
-		if ($autoCreateDir && !self::exists()) {
-			self::createDir('');
+		if ($autoCreateDir && !$this->exists()) {
+			$this->createDir('');
 		}
 	}
 
 
-	public static function getAbsolutePath(string $relativePath = null): string
+	public function getRelativePath(string $path): string
 	{
-		return self::$dirPath . ($relativePath ? DIRECTORY_SEPARATOR . $relativePath : '');
+		return (string) preg_replace('#^/#', '', str_replace($this->documentRoot->path, '', $this->getAbsolutePath($path)));
 	}
 
 
-	public static function read(string $relativePath): string
+	public function getAbsolutePath(string $relativePath = null): string
 	{
-		return FileSystem::read(self::getAbsolutePath($relativePath));
+		return $this->dirPath . ($relativePath ? DIRECTORY_SEPARATOR . $relativePath : '');
 	}
 
 
-	public static function readLines(string $relativePath, bool $stripNewLines = true): \Generator
+	public function read(string $relativePath): string
 	{
-		return FileSystem::readLines(self::getAbsolutePath($relativePath), $stripNewLines);
+		return FileSystem::read($this->getAbsolutePath($relativePath));
 	}
 
 
-	public static function write(string $relativePath, string $data, ?int $mode = 0666): void
+	public function readLines(string $relativePath, bool $stripNewLines = true): \Generator
 	{
-		FileSystem::write(self::getAbsolutePath($relativePath), $data, $mode);
+		return FileSystem::readLines($this->getAbsolutePath($relativePath), $stripNewLines);
 	}
 
 
-	public static function rename(string $origin, string $target, bool $overwrite = true): void
+	public function write(string $relativePath, string $data, ?int $mode = 0666): void
 	{
-		FileSystem::rename(self::getAbsolutePath($origin), self::getAbsolutePath($target), $overwrite);
+		FileSystem::write($this->getAbsolutePath($relativePath), $data, $mode);
 	}
 
 
-	public static function copy(string $origin, string $target, bool $overwrite = true): void
+	public function rename(string $origin, string $target, bool $overwrite = true): void
 	{
-		FileSystem::copy(self::getAbsolutePath($origin), self::getAbsolutePath($target), $overwrite);
+		FileSystem::rename($this->getAbsolutePath($origin), $this->getAbsolutePath($target), $overwrite);
 	}
 
 
-	public static function createDir(string $relativePath, int $mode = 0777): void
+	public function copy(string $origin, string $target, bool $overwrite = true): void
 	{
-		FileSystem::createDir(self::getAbsolutePath($relativePath), $mode);
+		FileSystem::copy($this->getAbsolutePath($origin), $this->getAbsolutePath($target), $overwrite);
 	}
 
 
-	public static function delete(string $relativePath = null): void
+	public function createDir(string $relativePath, int $mode = 0777): void
 	{
-		FileSystem::delete(self::getAbsolutePath($relativePath));
+		FileSystem::createDir($this->getAbsolutePath($relativePath), $mode);
 	}
 
 
-	public static function exists(string $relativePath = null): bool
+	public function delete(string $relativePath = null): void
 	{
-		return file_exists(self::getAbsolutePath($relativePath));
+		FileSystem::delete($this->getAbsolutePath($relativePath));
+	}
+
+
+	public function exists(string $relativePath = null): bool
+	{
+		return file_exists($this->getAbsolutePath($relativePath));
 	}
 }

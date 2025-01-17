@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Flexsyscz\FileSystem\Directories;
 
 
-class LogDirectory
+final class LogDirectory extends Directory
 {
-	use Directory;
 }

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Flexsyscz\FileSystem\Directories;
 
 
-class ConfigDirectory
+final class ConfigDirectory extends Directory
 {
-	use Directory;
 }

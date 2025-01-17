@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Flexsyscz\FileSystem;
+namespace Flexsyscz\FileSystem\Exceptions;
 
 
 class InvalidArgumentException extends \InvalidArgumentException

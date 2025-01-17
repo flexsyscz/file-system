@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Flexsyscz\FileSystem\Streams\Csv;
 
-use Flexsyscz\FileSystem\InvalidStateException;
+use Flexsyscz\FileSystem\Exceptions\StreamReaderException;
 use Flexsyscz\FileSystem\Streams\StreamReader;
 use Nette\Utils\ArrayHash;
 
@@ -21,12 +21,12 @@ class CsvStreamReader implements StreamReader
 	{
 		$file = fopen($filePath, 'r');
 		if (!$file) {
-			throw new InvalidStateException(sprintf('Unable to open a stream to the file %s', $filePath));
+			throw new StreamReaderException(sprintf('Unable to open a stream to the file %s', $filePath));
 		}
 
 		$this->file = $file;
 		if (!flock($this->file, LOCK_EX)) {
-			throw new InvalidStateException(sprintf('Unable to set a lock on the file %s', $filePath));
+			throw new StreamReaderException(sprintf('Unable to set a lock on the file %s', $filePath));
 		}
 
 		return $this;
@@ -47,7 +47,7 @@ class CsvStreamReader implements StreamReader
 		string $escapeChar = '\\'
 	): mixed {
 		if (($result = fgetcsv($this->file, $length, $delimiter, $enclosure, $escapeChar)) === null) { // @phpstan-ignore-line
-			throw new InvalidStateException('Unable to read the data from the CSV stream.');
+			throw new StreamReaderException('Unable to read the data from the CSV stream.');
 		}
 
 		return $result;
@@ -57,7 +57,7 @@ class CsvStreamReader implements StreamReader
 	public function close(): StreamReader
 	{
 		if (!flock($this->file, LOCK_UN)) {
-			throw new InvalidStateException('Unable to release the file\'s lock.');
+			throw new StreamReaderException('Unable to release the file\'s lock.');
 		}
 
 		return $this;

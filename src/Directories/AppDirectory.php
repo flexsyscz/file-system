@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Flexsyscz\FileSystem\Directories;
 
 
-class AppDirectory
+final class AppDirectory extends Directory
 {
-	use Directory;
 }

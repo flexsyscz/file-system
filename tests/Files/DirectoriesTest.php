@@ -4,8 +4,14 @@ declare(strict_types=1);
 
 namespace Tests\Files;
 
-use DateTimeImmutable;
 use Flexsyscz;
+use Flexsyscz\FileSystem\Directories\AppDirectory;
+use Flexsyscz\FileSystem\Directories\AssetsDirectory;
+use Flexsyscz\FileSystem\Directories\DataDirectory;
+use Flexsyscz\FileSystem\Directories\LogDirectory;
+use Flexsyscz\FileSystem\Directories\TempDirectory;
+use Flexsyscz\FileSystem\Directories\RootDirectory;
+use Flexsyscz\FileSystem\Directories\WwwDirectory;
 use Nette\Utils\FileSystem;
 use Tester\Assert;
 use Tester\TestCase;
@@ -18,83 +24,97 @@ require __DIR__ . '/../bootstrap.php';
  */
 class DirectoriesTest extends TestCase
 {
+	private RootDirectory $rootDir;
+	private	AppDirectory $appDir;
+	private LogDirectory $logDir;
+	private TempDirectory $tempDir;
+	private WwwDirectory $wwwDir;
+	private AssetsDirectory $assetsDir;
+	private DataDirectory $dataDir;
+
+
 	public function setUp(): void
 	{
-		Flexsyscz\FileSystem\Directories\AppDirectory::setUp(__DIR__ . '/../Resources/app');
-		Flexsyscz\FileSystem\Directories\LogDirectory::setUp(__DIR__ . '/../Resources/log');
-		Flexsyscz\FileSystem\Directories\TempDirectory::setUp(__DIR__ . '/../Resources/temp');
-		Flexsyscz\FileSystem\Directories\WwwDirectory::setUp(__DIR__ . '/../Resources/www');
-		Flexsyscz\FileSystem\Directories\AssetsDirectory::setUp(__DIR__ . '/../Resources/www/assets');
-		Flexsyscz\FileSystem\Directories\DataDirectory::setUp(__DIR__ . '/../Resources/www/data');
+		$this->rootDir = new RootDirectory(__DIR__ . '/../Resources');
+		$this->appDir = new AppDirectory(__DIR__ . '/../Resources/app');
+		$this->logDir = new LogDirectory(__DIR__ . '/../Resources/log');
+		$this->tempDir = new TempDirectory(__DIR__ . '/../Resources/temp');
+		$this->wwwDir = new WwwDirectory(__DIR__ . '/../Resources/www');
+		$this->assetsDir = new AssetsDirectory(__DIR__ . '/../Resources/www/assets');
+		$this->dataDir = new DataDirectory(__DIR__ . '/../Resources/www/data');
 	}
 
 
 	public function testDirectories(): void
 	{
+		// Root
+		Assert::equal(FileSystem::normalizePath(__DIR__ . '/../Resources/app/..'), $this->rootDir->getAbsolutePath());
+		Assert::equal('test', $this->rootDir->getRelativePath('test'));
+
 		// App
-		Assert::equal(FileSystem::normalizePath(__DIR__ . '/../Resources/app'), Flexsyscz\FileSystem\Directories\AppDirectory::getAbsolutePath());
+		Assert::equal(FileSystem::normalizePath(__DIR__ . '/../Resources/app'), $this->appDir->getAbsolutePath());
 
-		Flexsyscz\FileSystem\Directories\AppDirectory::createDir('bin');
-		Flexsyscz\FileSystem\Directories\AppDirectory::write('bin/test.txt', 'Test');
+		$this->appDir->createDir('bin');
+		$this->appDir->write('bin/test.txt', 'Test');
 
-		Assert::true(Flexsyscz\FileSystem\Directories\AppDirectory::exists('bin/test.txt'));
+		Assert::true($this->appDir->exists('bin/test.txt'));
 
-		Flexsyscz\FileSystem\Directories\AppDirectory::delete();
+		$this->appDir->delete();
 
 
 		// Log
-		Assert::equal(FileSystem::normalizePath(__DIR__ . '/../Resources/log'), Flexsyscz\FileSystem\Directories\LogDirectory::getAbsolutePath());
+		Assert::equal(FileSystem::normalizePath(__DIR__ . '/../Resources/log'), $this->logDir->getAbsolutePath());
 
-		Flexsyscz\FileSystem\Directories\LogDirectory::createDir('errors');
-		Flexsyscz\FileSystem\Directories\LogDirectory::write('errors/error.log', 'Error');
+		$this->logDir->createDir('errors');
+		$this->logDir->write('errors/error.log', 'Error');
 
-		Assert::true(Flexsyscz\FileSystem\Directories\LogDirectory::exists('errors/error.log'));
+		Assert::true($this->logDir->exists('errors/error.log'));
 
-		Flexsyscz\FileSystem\Directories\LogDirectory::delete();
+		$this->logDir->delete();
 
 
 		// Temp
-		Assert::equal(FileSystem::normalizePath(__DIR__ . '/../Resources/temp'), Flexsyscz\FileSystem\Directories\TempDirectory::getAbsolutePath());
+		Assert::equal(FileSystem::normalizePath(__DIR__ . '/../Resources/temp'), $this->tempDir->getAbsolutePath());
 
-		Flexsyscz\FileSystem\Directories\TempDirectory::createDir('cache');
-		Flexsyscz\FileSystem\Directories\TempDirectory::write('cache/test.txt', 'Data');
+		$this->tempDir->createDir('cache');
+		$this->tempDir->write('cache/test.txt', 'Data');
 
-		Assert::true(Flexsyscz\FileSystem\Directories\TempDirectory::exists('cache/test.txt'));
+		Assert::true($this->tempDir->exists('cache/test.txt'));
 
-		Flexsyscz\FileSystem\Directories\TempDirectory::delete();
+		$this->tempDir->delete();
 
 
 		// Www
-		Assert::equal(FileSystem::normalizePath(__DIR__ . '/../Resources/www'), Flexsyscz\FileSystem\Directories\WwwDirectory::getAbsolutePath());
+		Assert::equal(FileSystem::normalizePath(__DIR__ . '/../Resources/www'), $this->wwwDir->getAbsolutePath());
 
-		Flexsyscz\FileSystem\Directories\WwwDirectory::createDir('images');
-		Flexsyscz\FileSystem\Directories\WwwDirectory::write('images/hello.jpg', 'Data');
+		$this->wwwDir->createDir('images');
+		$this->wwwDir->write('images/hello.jpg', 'Data');
 
-		Assert::true(Flexsyscz\FileSystem\Directories\WwwDirectory::exists('images/hello.jpg'));
+		Assert::true($this->wwwDir->exists('images/hello.jpg'));
 
-		Flexsyscz\FileSystem\Directories\WwwDirectory::delete();
+		$this->wwwDir->delete();
 
 
 		// Assets
-		Assert::equal(FileSystem::normalizePath(__DIR__ . '/../Resources/www/assets'), Flexsyscz\FileSystem\Directories\AssetsDirectory::getAbsolutePath());
+		Assert::equal(FileSystem::normalizePath(__DIR__ . '/../Resources/www/assets'), $this->assetsDir->getAbsolutePath());
 
-		Flexsyscz\FileSystem\Directories\AssetsDirectory::createDir('dist');
-		Flexsyscz\FileSystem\Directories\AssetsDirectory::write('dist/main.js', 'JS');
+		$this->assetsDir->createDir('dist');
+		$this->assetsDir->write('dist/main.js', 'JS');
 
-		Assert::true(Flexsyscz\FileSystem\Directories\AssetsDirectory::exists('dist/main.js'));
+		Assert::true($this->assetsDir->exists('dist/main.js'));
 
-		Flexsyscz\FileSystem\Directories\AssetsDirectory::delete();
+		$this->assetsDir->delete();
 
 
 		// Data
-		Assert::equal(FileSystem::normalizePath(__DIR__ . '/../Resources/www/data'), Flexsyscz\FileSystem\Directories\DataDirectory::getAbsolutePath());
+		Assert::equal(FileSystem::normalizePath(__DIR__ . '/../Resources/www/data'), $this->dataDir->getAbsolutePath());
 
-		Flexsyscz\FileSystem\Directories\DataDirectory::createDir('users');
-		Flexsyscz\FileSystem\Directories\DataDirectory::write('users/profile.jpg', 'Photo');
+		$this->dataDir->createDir('users');
+		$this->dataDir->write('users/profile.jpg', 'Photo');
 
-		Assert::true(Flexsyscz\FileSystem\Directories\DataDirectory::exists('users/profile.jpg'));
+		Assert::true($this->dataDir->exists('users/profile.jpg'));
 
-		Flexsyscz\FileSystem\Directories\DataDirectory::delete();
+		$this->dataDir->delete();
 	}
 }
 
