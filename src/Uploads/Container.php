@@ -7,7 +7,10 @@ namespace Flexsyscz\FileSystem\Uploads;
 use Flexsyscz\FileSystem\Files\FileObject;
 use Flexsyscz\FileSystem\Files\ImageFile;
 use Flexsyscz\FileSystem\Exceptions\InvalidArgumentException;
+use Flexsyscz\FileSystem\Files\ImageHelper;
 use Nette\Http\FileUpload;
+use Nette\Utils\Image;
+use Nette\Utils\ImageException;
 use Nette\Utils\Random;
 
 
@@ -55,5 +58,18 @@ final class Container implements ImageFile
 
 		$prefix = Random::generate($length, $charsetMask);
 		return $mapper ? call_user_func($mapper, $prefix, $this->name) : sprintf('%s_%s', $prefix, $this->name);
+	}
+
+
+	/**
+	 * @param int|string|null $width
+	 * @param int|string|null $height
+	 * @param int-mask-of<Image::OrSmaller|Image::OrBigger|Image::Stretch|Image::Cover|Image::ShrinkOnly> $flags
+	 * @return Image
+	 * @throws ImageException
+	 */
+	public function getOptimizedImage(int|string $width = null, int|string $height = null, int $flags = Image::OrSmaller): Image
+	{
+		return ImageHelper::getOptimizedImage($this->fileUpload);
 	}
 }

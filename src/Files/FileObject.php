@@ -34,44 +34,4 @@ trait FileObject
 
 		return $this->isImage;
 	}
-
-
-	/**
-	 * @param int|string|null $width
-	 * @param int|string|null $height
-	 * @param int-mask-of<Image::OrSmaller|Image::OrBigger|Image::Stretch|Image::Cover|Image::ShrinkOnly> $flags
-	 * @return Image|null
-	 * @throws ImageException
-	 */
-	public function getOptimizedImage(int|string $width = null, int|string $height = null, int $flags = Image::OrSmaller): ?Image
-	{
-		if ($this->isOk()) {
-			if ($this->isImage()) {
-				$exif = @exif_read_data($this->fileUpload->getTemporaryFile());
-				$image = $this->fileUpload->toImage();
-				if (is_array($exif) && !empty($exif['Orientation'])) {
-					$backgroundColor = ImageColor::hex('#000');
-					switch ($exif['Orientation']) {
-						case 8:
-							$image = $image->rotate(90, $backgroundColor);
-							break;
-						case 3:
-							$image = $image->rotate(180, $backgroundColor);
-							break;
-						case 6:
-							$image = $image->rotate(-90, $backgroundColor);
-							break;
-					}
-				}
-
-				if ($width || $height) {
-					$image->resize($width, $height, $flags);
-				}
-
-				return $image;
-			}
-		}
-
-		return null;
-	}
 }
