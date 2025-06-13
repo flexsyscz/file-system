@@ -20,7 +20,7 @@ class ImageHelper
 	 * @return Image
 	 * @throws ImageException
 	 */
-	public static function getOptimizedImage(string|FileUpload $file, int|string $width = null, int|string $height = null, int $flags = Image::OrSmaller): Image
+	public static function getOptimizedImage(string|FileUpload $file, int|string|null $width = null, int|string|null $height = null, int $flags = Image::OrSmaller): Image
 	{
 			$exif = @exif_read_data($file instanceof FileUpload ? $file->getTemporaryFile() : $file);
 			$image = $file instanceof FileUpload ? $file->toImage() : Image::fromFile($file);

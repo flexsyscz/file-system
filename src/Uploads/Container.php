@@ -46,7 +46,7 @@ final class Container implements ImageFile
 	 * @param callable|null $mapper
 	 * @return string
 	 */
-	public function getRandomizedName(int $length = 10, string $charsetMask = '0-9a-z', callable $mapper = null): string
+	public function getRandomizedName(int $length = 10, string $charsetMask = '0-9a-z', ?callable $mapper = null): string
 	{
 		if($length < 1) {
 			throw new InvalidArgumentException('Length must be equal or greater than 1.');
@@ -68,7 +68,7 @@ final class Container implements ImageFile
 	 * @return Image
 	 * @throws ImageException
 	 */
-	public function getOptimizedImage(int|string $width = null, int|string $height = null, int $flags = Image::OrSmaller): Image
+	public function getOptimizedImage(int|string|null $width = null, int|string|null $height = null, int $flags = Image::OrSmaller): Image
 	{
 		return ImageHelper::getOptimizedImage($this->fileUpload);
 	}

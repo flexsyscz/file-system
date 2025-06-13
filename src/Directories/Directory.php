@@ -30,7 +30,7 @@ abstract class Directory
 	}
 
 
-	public function getAbsolutePath(string $relativePath = null): string
+	public function getAbsolutePath(?string $relativePath = null): string
 	{
 		return $this->dirPath . ($relativePath ? DIRECTORY_SEPARATOR . $relativePath : '');
 	}
@@ -72,13 +72,13 @@ abstract class Directory
 	}
 
 
-	public function delete(string $relativePath = null): void
+	public function delete(?string $relativePath = null): void
 	{
 		FileSystem::delete($this->getAbsolutePath($relativePath));
 	}
 
 
-	public function exists(string $relativePath = null): bool
+	public function exists(?string $relativePath = null): bool
 	{
 		return file_exists($this->getAbsolutePath($relativePath));
 	}
