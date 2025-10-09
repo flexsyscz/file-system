@@ -11,12 +11,13 @@ use Flexsyscz\FileSystem\Streams\StreamWriter;
 class CsvStreamWriter implements StreamWriter
 {
 	public const Delimiter = ';';
+	public const UtfBomSequence = "\xEF\xBB\xBF";
 
 	/** @var resource */
 	private $file;
 
 
-	public function open(string $filePath): StreamWriter
+	public function open(string $filePath, bool $appendBomSequence = true): StreamWriter
 	{
 		$file = fopen($filePath, 'w');
 		if (!$file) {
@@ -26,6 +27,12 @@ class CsvStreamWriter implements StreamWriter
 		$this->file = $file;
 		if (!flock($this->file, LOCK_EX)) {
 			throw new StreamWriterException(sprintf('Unable to set a lock on the file %s', $filePath));
+		}
+
+		if ($appendBomSequence) {
+			if (!fwrite($this->file, self::UtfBomSequence)) {
+				throw new StreamWriterException(sprintf('Unable to write UTF BOM sequence to a file %s', $filePath));
+			}
 		}
 
 		return $this;
