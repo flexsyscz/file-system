@@ -4,10 +4,6 @@ declare(strict_types=1);
 
 namespace Flexsyscz\FileSystem\Files;
 
-use Nette\Utils\Image;
-use Nette\Utils\ImageColor;
-use Nette\Utils\ImageException;
-
 
 trait FileObject
 {
