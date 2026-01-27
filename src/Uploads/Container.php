@@ -40,6 +40,12 @@ final class Container implements ImageFile
 	}
 
 
+	public function moveUpload(string $dest): void
+	{
+		$this->fileUpload->move($dest);
+	}
+
+
 	/**
 	 * @param int $length
 	 * @param string $charsetMask
