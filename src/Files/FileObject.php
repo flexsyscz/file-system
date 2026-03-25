@@ -8,13 +8,14 @@ namespace Flexsyscz\FileSystem\Files;
 trait FileObject
 {
 	public readonly bool $isImage;
-	public readonly string $name;
-	public readonly int $size;
-	public readonly ?string $type;
 
 
 	public function isImage(): bool
 	{
+		if (!isset($this->type)) {
+			return false;
+		}
+
 		if (!isset($this->isImage)) {
 			$flag = imagetypes();
 			$types = array_filter([
