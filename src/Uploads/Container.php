@@ -18,6 +18,10 @@ final class Container implements ImageFile
 {
 	use FileObject;
 
+	public readonly string $name;
+	public readonly int $size;
+	public readonly ?string $type;
+
 
 	public function __construct(private readonly FileUpload $fileUpload)
 	{
